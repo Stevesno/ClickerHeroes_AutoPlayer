@@ -27,13 +27,11 @@ namespace clickerheroes.autoplayer
     {
         public Point p;
         public Modifiers modifiers;
-        public Boolean waitForAnimation;
 
-        public Action(Point pt, Modifiers mod, Boolean wait = false)
+        public Action(Point pt, Modifiers mod)
         {
             p = pt;
             modifiers = mod;
-            waitForAnimation = wait;
         }
     }
 
@@ -269,11 +267,6 @@ namespace clickerheroes.autoplayer
         static int SpecialActionQueueHasValues = 0;
 
         /// <summary>
-        /// This is a shared value that contains the timestamp of the last upgrade animation start
-        /// </summary>
-        public static DateTime LastAnimation = DateTime.Now;
-
-        /// <summary>
         /// True if the auto-clicker thread should be active. Updated using interlocked operations
         /// </summary>
         static int ThreadActive = 0;
@@ -349,31 +342,33 @@ namespace clickerheroes.autoplayer
             {
                 while (hs.Hero.GetCostToLevel(heroLevel + 1, heroLevel) < currentMoney && desiredLevel > heroLevel)
                 {
+
                     if (desiredLevel - heroLevel >= 100 && hs.Hero.GetCostToLevel(heroLevel + 100, heroLevel) < currentMoney)
                     {
-                        AddAction(new Action(pt, Modifiers.CTRL, true));
+                        AddAction(new Action(pt, Modifiers.CTRL));
                         currentMoney -= hs.Hero.GetCostToLevel(heroLevel + 100, heroLevel);
                         heroLevel += 100;
                     }
                     else if (desiredLevel - heroLevel >= 25 && hs.Hero.GetCostToLevel(heroLevel + 25, heroLevel) < currentMoney)
                     {
-                        AddAction(new Action(pt, Modifiers.Z, true));
+                        AddAction(new Action(pt, Modifiers.Z));
                         currentMoney -= hs.Hero.GetCostToLevel(heroLevel + 25, heroLevel);
                         heroLevel += 25;
                     }
                     else if (desiredLevel - heroLevel >= 10 && hs.Hero.GetCostToLevel(heroLevel + 10, heroLevel) < currentMoney)
                     {
-                        AddAction(new Action(pt, Modifiers.SHIFT, true));
+                        AddAction(new Action(pt, Modifiers.SHIFT));
                         currentMoney -= hs.Hero.GetCostToLevel(heroLevel + 10, heroLevel);
                         heroLevel += 10;
                     }
                     else
                     {
-                        AddAction(new Action(pt, 0, true));
+                        AddAction(new Action(pt, 0));
                         currentMoney -= hs.Hero.GetCostToLevel(heroLevel + 1, heroLevel);
                         heroLevel++;
                     }
                 }
+
                 return false;
             }
             else
@@ -482,11 +477,6 @@ namespace clickerheroes.autoplayer
                                     break;
                                 default:
                                     break;
-                            }
-
-                            if (nextAction.waitForAnimation)
-                            {
-                                LastAnimation = DateTime.Now;
                             }
 
                             Thread.Sleep(20);
