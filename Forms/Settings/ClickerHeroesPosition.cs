@@ -225,21 +225,24 @@ namespace clickerheroes.autoplayer
             if (b)
             {
                 var point = new Imports.POINT();
+                point.X = rect.Left;
+                point.Y = rect.Top;
                 b = Imports.ClientToScreen(hwnd, ref point);
                 if (b)
                 {
                     // Set the playable area and update labels
-                    GameEngine.SetPlayableArea(new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top));
+                    var playableArea = new Rectangle(point.X, point.Y, rect.Right - rect.Left, rect.Bottom - rect.Top);
+                    GameEngine.SetPlayableArea(playableArea);
 
                     Point clickPoint = GameEngine.GetClickArea();
                     clickAreaLbl.Text = string.Format("{0}, {1}", clickPoint.X, clickPoint.Y);
 
                     if (GameEngine.ValidatePlayableArea())
                     {
-                        Properties.Settings.Default.top = point.X;
-                        Properties.Settings.Default.bot = point.Y;
-                        Properties.Settings.Default.left = rect.Left;
-                        Properties.Settings.Default.right = rect.Right;
+                        Properties.Settings.Default.top = playableArea.Top;
+                        Properties.Settings.Default.bot = playableArea.Bottom;
+                        Properties.Settings.Default.left = playableArea.Left;
+                        Properties.Settings.Default.right = playableArea.Right;
                         Properties.Settings.Default.Save();
 
                         MessageBox.Show("Settings saved!");
